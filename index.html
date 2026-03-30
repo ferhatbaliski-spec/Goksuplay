@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>GöksuPlay</title>
+<style>
+body {
+    background: #0f172a;
+    color: white;
+    font-family: Arial;
+    text-align: center;
+}
+.container {
+    margin-top: 50px;
+}
+button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background: purple;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+.coin {
+    font-size: 30px;
+    margin: 20px;
+}
+</style>
+</head>
+<body>
+
+<h1>🎰 GöksuPlay</h1>
+<p>Oyna, Kazan, Eğlen</p>
+
+<div class="container">
+    <div class="coin">Coin: <span id="coin">0</span></div>
+    <button onclick="spin()">SPIN AT</button>
+    <p id="result"></p>
+</div>
+
+<script>
+let coin = 0;
+
+function spin() {
+    let kazan = Math.floor(Math.random() * 500);
+    coin += kazan;
+    document.getElementById("coin").innerText = coin;
+    document.getElementById("result").innerText = "Kazandın: " + kazan + " coin!";
+}
+</script>
+
+</body>
+</html>
