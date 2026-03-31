@@ -1,129 +1,35 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>GoksuPlay</title>
+</head>
+<body style="background:black;color:white;text-align:center;padding-top:100px;font-family:Arial;">
+
+<h1>🎰 GoksuPlay</h1>
+
+<div id="coin">Coin: 100</div>
+
+<button onclick="spin()">SPIN</button>
+
+<div id="result"></div>
+
 <script>
-  const STORAGE_KEY = "goksuplay_coin";
-  let coin = localStorage.getItem(STORAGE_KEY)
-    ? parseInt(localStorage.getItem(STORAGE_KEY), 10)
-    : 100;
+let coin = 100;
 
-  const coinEl = document.getElementById("coin");
-  const slotEl = document.getElementById("slot");
-  const resultEl = document.getElementById("result");
-  const spinBtn = document.getElementById("spinBtn");
+function spin(){
+  let r = Math.floor(Math.random()*3);
 
-  const emojis = ["🍒", "💎", "7️⃣", "🍋", "⭐"];
-
-  function updateCoin() {
-    coinEl.innerText = "Coin: " + coin;
-    localStorage.setItem(STORAGE_KEY, coin);
+  if(r===0){
+    document.getElementById("result").innerText="Kaybettin";
+  }else{
+    coin+=10;
+    document.getElementById("result").innerText="+10 Coin";
   }
 
-  function setResult(text, type) {
-    resultEl.innerText = text;
-    resultEl.className = type;
-  }
-
-  function randomEmoji() {
-    return emojis[Math.floor(Math.random() * emojis.length)];
-  }
-
-  function playTone(freq, duration, type = "sine", volume = 0.03) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    const ctx = new AudioContextClass();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.value = volume;
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      ctx.currentTime + duration / 1000
-    );
-
-    osc.stop(ctx.currentTime + duration / 1000 + 0.02);
-  }
-
-  function playSpinSound() {
-    playTone(420, 80, "square", 0.02);
-    setTimeout(() => playTone(520, 80, "square", 0.02), 90);
-    setTimeout(() => playTone(620, 80, "square", 0.02), 180);
-  }
-
-  function playWinSound() {
-    playTone(700, 120, "sine", 0.03);
-    setTimeout(() => playTone(900, 140, "sine", 0.03), 120);
-  }
-
-  function playJackpotSound() {
-    playTone(800, 120, "triangle", 0.04);
-    setTimeout(() => playTone(1000, 120, "triangle", 0.04), 120);
-    setTimeout(() => playTone(1300, 220, "triangle", 0.04), 240);
-  }
-
-  function playLoseSound() {
-    playTone(300, 180, "sawtooth", 0.02);
-  }
-
-  function spin() {
-    if (spinBtn.disabled) return;
-
-    if (coin < 10) {
-      setResult("❌ Spin için en az 10 coin lazım.", "lose");
-      playLoseSound();
-      return;
-    }
-
-    coin -= 10;
-    updateCoin();
-
-    spinBtn.disabled = true;
-    setResult("🎰 Dönüyor...", "info");
-    playSpinSound();
-
-    const interval = setInterval(() => {
-      slotEl.innerText = `${randomEmoji()} ${randomEmoji()} ${randomEmoji()}`;
-    }, 90);
-
-    setTimeout(() => {
-      clearInterval(interval);
-
-      const outcome = Math.floor(Math.random() * 100);
-
-      if (outcome < 55) {
-        slotEl.innerText = "🍒 💎 🍋";
-        setResult("😢 Bu turda kazanamadın.", "lose");
-        playLoseSound();
-      } else if (outcome < 90) {
-        coin += 20;
-        slotEl.innerText = "🍒 🍒 💎";
-        setResult("💰 +20 coin kazandın!", "win");
-        playWinSound();
-      } else {
-        coin += 80;
-        slotEl.innerText = "7️⃣ 7️⃣ 7️⃣";
-        setResult("🔥 JACKPOT! +80 coin", "win");
-        playJackpotSound();
-      }
-
-      updateCoin();
-      spinBtn.disabled = false;
-    }, 1200);
-  }
-
-  function resetCoins() {
-    coin = 100;
-    slotEl.innerText = "🍒 🍒 🍒";
-    updateCoin();
-    setResult("Hazır.", "info");
-    playTone(500, 100, "sine", 0.02);
-  }
-
-  updateCoin();
+  document.getElementById("coin").innerText="Coin: "+coin;
+}
 </script>
+
+</body>
+</html>
