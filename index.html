@@ -1,152 +1,230 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<title>GöksuPlay</title>
-
-<style>
-body {
-  background: linear-gradient(135deg, #0f172a, #1e293b);
-  color: white;
-  font-family: Arial;
-  text-align: center;
-  padding-top: 100px;
-}
-
-h1 {
-  font-size: 40px;
-}
-
-#slot {
-  font-size: 50px;
-  margin: 20px 0;
-
-
-#coin {
-  font-size: 28px;
-  margin: 20px;
-}
-
-button {
-  padding: 15px 30px;
-  font-size: 20px;
-  background: linear-gradient(45deg, purple, pink);
-  color: white;
-  border: none;
-  border-radius: 12px;
-}
-
-#result {
-  margin-top: 20px;
-  font-size: 22px;
-}
-</style>
-</head>
-
-<body>
-
-<h1>🎰 GöksuPlay</h1>
-<p>Oyna, Kazan, Eğlen</p>
-
-<div id="coin">Coin: 0</div>
-
-<div id="slot">🍒 🍒 🍒</div>
-
-<button onclick="spin()">SPIN AT</button>
-
-<div id="result"></div>
-
-<script>
-let coin = localStorage.getItem("coin") 
-  ? parseInt(localStorage.getItem("coin")) 
-  : 0;
-
-document.getElementById("coin").innerText = "Coin: " + coin;
-
-function spin() {
-  const slot = document.getElementById("slot");
-  const result = document.getElementById("result");
-
-  const emojis = ["🍒", "💎", "7️⃣"];
-
-  result.innerText = "🎰 Dönüyor...";
-
-  const interval = setInterval(() => {
-    slot.innerText =
-      emojis[Math.floor(Math.random() * 3)] + " " +
-      emojis[Math.floor(Math.random() * 3)] + " " +
-      emojis[Math.floor(Math.random() * 3)];
-  }, 100);
-
-  setTimeout(() => {
-    clearInterval(interval);
-
-    let random = Math.floor(Math.random() * 3);
-
-    if (random === 0) {
-      slot.innerText = "🍒 💎 🍒";
-      result.innerText = "😢 Kaybettin";
-    } 
-    else if (random === 1) {
-      coin += 10;
-      slot.innerText = "🍒 🍒 💎";
-      result.innerText = "💰 +10 Coin!";
-    } 
-    else {
-      coin += 50;
-      slot.innerText = "7️⃣ 7️⃣ 7️⃣";
-      result.innerText = "🔥 JACKPOT +50!";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GöksuPlay</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background:
+        radial-gradient(circle at top, #1e293b 0%, #0f172a 45%, #020617 100%);
+      color: #fff;
     }
 
-    document.getElementById("coin").innerText = "Coin: " + coin;
-    localStorage.setItem("coin", coin);
+    .card {
+      width: min(92vw, 420px);
+      padding: 28px 22px 30px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35), 0 0 30px rgba(168,85,247,0.12);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
 
-  }, 1000);
-}
-</script>
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.5px;
+    }
 
-</body>
-</html>function spin() {
-  const slot = document.getElementById("slot");
-  const result = document.getElementById("result");
+    .sub {
+      margin: 0 0 22px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
 
-  const emojis = ["🍒", "💎", "7️⃣"];
+    .balance {
+      margin: 0 0 18px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #fde68a;
+    }
 
-  result.innerText = "🎰 Dönüyor...";
+    .slot-box {
+      margin: 18px auto 20px;
+      padding: 18px 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 16px rgba(255,255,255,0.04);
+    }
 
-  let count = 0;
+    #slot {
+      font-size: 48px;
+      letter-spacing: 8px;
+      min-height: 58px;
+    }
 
-  const interval = setInterval(() => {
-    slot.innerText =
-      emojis[Math.floor(Math.random() * 3)] + " " +
-      emojis[Math.floor(Math.random() * 3)] + " " +
-      emojis[Math.floor(Math.random() * 3)];
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
 
-    count++;
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
 
-    if (count > 15) {
-      clearInterval(interval);
+    button:active {
+      transform: scale(0.97);
+    }
 
-      let random = Math.floor(Math.random() * 3);
+    #spinBtn {
+      min-width: 150px;
+      background: linear-gradient(45deg, #9333ea, #ec4899);
+      box-shadow: 0 10px 24px rgba(147,51,234,0.35);
+    }
 
-      if (random === 0) {
-        slot.innerText = "🍒 💎 🍒";
-        result.innerText = "😢 Kaybettin";
-      } 
-      else if (random === 1) {
-        coin += 10;
-        slot.innerText = "🍒 🍒 💎";
-        result.innerText = "💰 +10 Coin!";
-      } 
-      else {
-        coin += 50;
-        slot.innerText = "7️⃣ 7️⃣ 7️⃣";
-        result.innerText = "🔥 JACKPOT +50!";
+    #resetBtn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .cost {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    #result {
+      min-height: 28px;
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .win { color: #86efac; }
+    .lose { color: #fca5a5; }
+    .info { color: #93c5fd; }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎰 GöksuPlay</h1>
+    <p class="sub">Eğlence amaçlı slot deneyimi</p>
+
+    <div class="balance" id="coin">Coin: 100</div>
+
+    <div class="slot-box">
+      <div id="slot">🍒 🍒 🍒</div>
+    </div>
+
+    <div class="controls">
+      <button id="spinBtn" onclick="spin()">SPIN AT</button>
+      <button id="resetBtn" onclick="resetCoins()">SIFIRLA</button>
+    </div>
+
+    <div class="cost">Her spin maliyeti: 10 coin</div>
+    <div id="result" class="info">Hazır.</div>
+
+    <div class="footer">Coinler sadece bu cihazda saklanır.</div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "goksuplay_coin";
+    let coin = localStorage.getItem(STORAGE_KEY)
+      ? parseInt(localStorage.getItem(STORAGE_KEY), 10)
+      : 100;
+
+    const coinEl = document.getElementById("coin");
+    const slotEl = document.getElementById("slot");
+    const resultEl = document.getElementById("result");
+    const spinBtn = document.getElementById("spinBtn");
+
+    const emojis = ["🍒", "💎", "7️⃣", "🍋", "⭐"];
+
+    function updateCoin() {
+      coinEl.innerText = "Coin: " + coin;
+      localStorage.setItem(STORAGE_KEY, coin);
+    }
+
+    function setResult(text, type) {
+      resultEl.innerText = text;
+      resultEl.className = type;
+    }
+
+    function randomEmoji() {
+      return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    function spin() {
+      if (spinBtn.disabled) return;
+
+      if (coin < 10) {
+        setResult("❌ Spin için en az 10 coin lazım.", "lose");
+        return;
       }
 
-      document.getElementById("coin").innerText = "Coin: " + coin;
-      localStorage.setItem("coin", coin);
+      coin -= 10;
+      updateCoin();
+
+      spinBtn.disabled = true;
+      setResult("🎰 Dönüyor...", "info");
+
+      let tick = 0;
+      const interval = setInterval(() => {
+        slotEl.innerText = `${randomEmoji()} ${randomEmoji()} ${randomEmoji()}`;
+        tick++;
+      }, 90);
+
+      setTimeout(() => {
+        clearInterval(interval);
+
+        const outcome = Math.floor(Math.random() * 100);
+
+        if (outcome < 55) {
+          slotEl.innerText = "🍒 💎 🍋";
+          setResult("😢 Bu turda kazanamadın.", "lose");
+        } else if (outcome < 90) {
+          coin += 20;
+          slotEl.innerText = "🍒 🍒 💎";
+          setResult("💰 +20 coin kazandın!", "win");
+        } else {
+          coin += 80;
+          slotEl.innerText = "7️⃣ 7️⃣ 7️⃣";
+          setResult("🔥 JACKPOT! +80 coin", "win");
+        }
+
+        updateCoin();
+        spinBtn.disabled = false;
+      }, 1200);
     }
 
-  }, 80);
-}
+    function resetCoins() {
+      coin = 100;
+      slotEl.innerText = "🍒 🍒 🍒";
+      updateCoin();
+      setResult("Hazır.", "info");
+    }
+
+    updateCoin();
+  </script>
+</body>
+</html>
