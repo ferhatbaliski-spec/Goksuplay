@@ -1,129 +1,256 @@
-<script>
-  const STORAGE_KEY = "goksuplay_coin";
-  let coin = localStorage.getItem(STORAGE_KEY)
-    ? parseInt(localStorage.getItem(STORAGE_KEY), 10)
-    : 100;
-
-  const coinEl = document.getElementById("coin");
-  const slotEl = document.getElementById("slot");
-  const resultEl = document.getElementById("result");
-  const spinBtn = document.getElementById("spinBtn");
-
-  const emojis = ["🍒", "💎", "7️⃣", "🍋", "⭐"];
-
-  function updateCoin() {
-    coinEl.innerText = "Coin: " + coin;
-    localStorage.setItem(STORAGE_KEY, coin);
-  }
-
-  function setResult(text, type) {
-    resultEl.innerText = text;
-    resultEl.className = type;
-  }
-
-  function randomEmoji() {
-    return emojis[Math.floor(Math.random() * emojis.length)];
-  }
-
-  function playTone(freq, duration, type = "sine", volume = 0.03) {
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContextClass) return;
-
-    const ctx = new AudioContextClass();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = type;
-    osc.frequency.value = freq;
-    gain.gain.value = volume;
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      ctx.currentTime + duration / 1000
-    );
-
-    osc.stop(ctx.currentTime + duration / 1000 + 0.02);
-  }
-
-  function playSpinSound() {
-    playTone(420, 80, "square", 0.02);
-    setTimeout(() => playTone(520, 80, "square", 0.02), 90);
-    setTimeout(() => playTone(620, 80, "square", 0.02), 180);
-  }
-
-  function playWinSound() {
-    playTone(700, 120, "sine", 0.03);
-    setTimeout(() => playTone(900, 140, "sine", 0.03), 120);
-  }
-
-  function playJackpotSound() {
-    playTone(800, 120, "triangle", 0.04);
-    setTimeout(() => playTone(1000, 120, "triangle", 0.04), 120);
-    setTimeout(() => playTone(1300, 220, "triangle", 0.04), 240);
-  }
-
-  function playLoseSound() {
-    playTone(300, 180, "sawtooth", 0.02);
-  }
-
-  function spin() {
-    if (spinBtn.disabled) return;
-
-    if (coin < 10) {
-      setResult("❌ Spin için en az 10 coin lazım.", "lose");
-      playLoseSound();
-      return;
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GöksuPlay</title>
+  <style>
+    * {
+      box-sizing: border-box;
     }
 
-    coin -= 10;
-    updateCoin();
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      background: radial-gradient(circle at top, #1e293b 0%, #0f172a 45%, #020617 100%);
+      color: #fff;
+      padding: 20px;
+    }
 
-    spinBtn.disabled = true;
-    setResult("🎰 Dönüyor...", "info");
-    playSpinSound();
+    .card {
+      width: min(92vw, 430px);
+      padding: 28px 22px 30px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35), 0 0 30px rgba(168, 85, 247, 0.12);
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
 
-    const interval = setInterval(() => {
-      slotEl.innerText = `${randomEmoji()} ${randomEmoji()} ${randomEmoji()}`;
-    }, 90);
+    h1 {
+      margin: 0 0 8px;
+      font-size: 34px;
+      letter-spacing: 0.5px;
+    }
 
-    setTimeout(() => {
-      clearInterval(interval);
+    .sub {
+      margin: 0 0 22px;
+      color: #cbd5e1;
+      font-size: 14px;
+    }
 
-      const outcome = Math.floor(Math.random() * 100);
+    .balance {
+      margin: 0 0 18px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #fde68a;
+    }
 
-      if (outcome < 55) {
-        slotEl.innerText = "🍒 💎 🍋";
-        setResult("😢 Bu turda kazanamadın.", "lose");
-        playLoseSound();
-      } else if (outcome < 90) {
-        coin += 20;
-        slotEl.innerText = "🍒 🍒 💎";
-        setResult("💰 +20 coin kazandın!", "win");
-        playWinSound();
-      } else {
-        coin += 80;
-        slotEl.innerText = "7️⃣ 7️⃣ 7️⃣";
-        setResult("🔥 JACKPOT! +80 coin", "win");
-        playJackpotSound();
+    .slot-box {
+      margin: 18px auto 20px;
+      padding: 18px 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: inset 0 0 16px rgba(255,255,255,0.04);
+    }
+
+    #slot {
+      font-size: 48px;
+      letter-spacing: 8px;
+      min-height: 58px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 14px 20px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.15s ease, opacity 0.15s ease;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    #spinBtn {
+      min-width: 150px;
+      background: linear-gradient(45deg, #9333ea, #ec4899);
+      box-shadow: 0 10px 24px rgba(147, 51, 234, 0.35);
+    }
+
+    #resetBtn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .cost {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    #result {
+      min-height: 28px;
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .win {
+      color: #86efac;
+    }
+
+    .lose {
+      color: #fca5a5;
+    }
+
+    .info {
+      color: #93c5fd;
+    }
+
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #94a3b8;
+    }
+
+    .jackpot-glow {
+      animation: glow 0.6s ease-in-out 3;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 0 0 rgba(250, 204, 21, 0); }
+      50% { box-shadow: 0 0 30px rgba(250, 204, 21, 0.7); }
+      100% { box-shadow: 0 0 0 rgba(250, 204, 21, 0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <h1>🎰 GöksuPlay</h1>
+    <p class="sub">Eğlence amaçlı slot deneyimi</p>
+
+    <div class="balance" id="coin">Coin: 100</div>
+
+    <div class="slot-box">
+      <div id="slot">🍒 🍒 🍒</div>
+    </div>
+
+    <div class="controls">
+      <button id="spinBtn" onclick="spin()">SPIN AT</button>
+      <button id="resetBtn" onclick="resetCoins()">SIFIRLA</button>
+    </div>
+
+    <div class="cost">Her spin maliyeti: 10 coin</div>
+    <div id="result" class="info">Hazır.</div>
+
+    <div class="footer">Coinler sadece bu cihazda saklanır.</div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = "goksuplay_coin";
+    const START_COIN = 100;
+    const SPIN_COST = 10;
+
+    let coin = localStorage.getItem(STORAGE_KEY)
+      ? parseInt(localStorage.getItem(STORAGE_KEY), 10)
+      : START_COIN;
+
+    const coinEl = document.getElementById("coin");
+    const slotEl = document.getElementById("slot");
+    const resultEl = document.getElementById("result");
+    const spinBtn = document.getElementById("spinBtn");
+    const cardEl = document.getElementById("card");
+
+    const emojis = ["🍒", "💎", "7️⃣", "🍋", "⭐"];
+
+    function updateCoin() {
+      coinEl.innerText = "Coin: " + coin;
+      localStorage.setItem(STORAGE_KEY, coin);
+    }
+
+    function setResult(text, type) {
+      resultEl.innerText = text;
+      resultEl.className = type;
+    }
+
+    function randomEmoji() {
+      return emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    function spin() {
+      if (spinBtn.disabled) return;
+
+      if (coin < SPIN_COST) {
+        setResult("❌ Spin için en az 10 coin lazım.", "lose");
+        return;
       }
 
+      coin -= SPIN_COST;
       updateCoin();
-      spinBtn.disabled = false;
-    }, 1200);
-  }
 
-  function resetCoins() {
-    coin = 100;
-    slotEl.innerText = "🍒 🍒 🍒";
+      spinBtn.disabled = true;
+      setResult("🎰 Dönüyor...", "info");
+
+      const interval = setInterval(() => {
+        slotEl.innerText = `${randomEmoji()} ${randomEmoji()} ${randomEmoji()}`;
+      }, 90);
+
+      setTimeout(() => {
+        clearInterval(interval);
+
+        const outcome = Math.floor(Math.random() * 100);
+
+        if (outcome < 55) {
+          slotEl.innerText = "🍒 💎 🍋";
+          setResult("😢 Bu turda kazanamadın.", "lose");
+        } else if (outcome < 90) {
+          coin += 20;
+          slotEl.innerText = "🍒 🍒 💎";
+          setResult("💰 +20 coin kazandın!", "win");
+        } else {
+          coin += 80;
+          slotEl.innerText = "7️⃣ 7️⃣ 7️⃣";
+          setResult("🔥 JACKPOT! +80 coin", "win");
+          cardEl.classList.add("jackpot-glow");
+          setTimeout(() => cardEl.classList.remove("jackpot-glow"), 1800);
+        }
+
+        updateCoin();
+        spinBtn.disabled = false;
+      }, 1200);
+    }
+
+    function resetCoins() {
+      coin = START_COIN;
+      slotEl.innerText = "🍒 🍒 🍒";
+      updateCoin();
+      setResult("Hazır.", "info");
+    }
+
     updateCoin();
-    setResult("Hazır.", "info");
-    playTone(500, 100, "sine", 0.02);
-  }
-
-  updateCoin();
-</script>
+  </script>
+</body>
+</html>
