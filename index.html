@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>GöksuPlay</title>
+
+<style>
+body {
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding-top: 100px;
+}
+
+h1 {
+  font-size: 40px;
+}
+
+#slot {
+  font-size: 50px;
+  margin: 20px 0;
+}
+
+#coin {
+  font-size: 28px;
+  margin: 20px;
+}
+
+button {
+  padding: 15px 30px;
+  font-size: 20px;
+  background: linear-gradient(45deg, purple, pink);
+  color: white;
+  border: none;
+  border-radius: 12px;
+}
+
+#result {
+  margin-top: 20px;
+  font-size: 22px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎰 GöksuPlay</h1>
+<p>Oyna, Kazan, Eğlen</p>
+
+<div id="coin">Coin: 0</div>
+
+<div id="slot">🍒 🍒 🍒</div>
+
+<button onclick="spin()">SPIN AT</button>
+
+<div id="result"></div>
+
+<script>
+let coin = localStorage.getItem("coin") 
+  ? parseInt(localStorage.getItem("coin")) 
+  : 0;
+
+document.getElementById("coin").innerText = "Coin: " + coin;
+
+function spin() {
+  const slot = document.getElementById("slot");
+  const result = document.getElementById("result");
+
+  const emojis = ["🍒", "💎", "7️⃣"];
+
+  result.innerText = "🎰 Dönüyor...";
+
+  const interval = setInterval(() => {
+    slot.innerText =
+      emojis[Math.floor(Math.random() * 3)] + " " +
+      emojis[Math.floor(Math.random() * 3)] + " " +
+      emojis[Math.floor(Math.random() * 3)];
+  }, 100);
+
+  setTimeout(() => {
+    clearInterval(interval);
+
+    let random = Math.floor(Math.random() * 3);
+
+    if (random === 0) {
+      slot.innerText = "🍒 💎 🍒";
+      result.innerText = "😢 Kaybettin";
+    } 
+    else if (random === 1) {
+      coin += 10;
+      slot.innerText = "🍒 🍒 💎";
+      result.innerText = "💰 +10 Coin!";
+    } 
+    else {
+      coin += 50;
+      slot.innerText = "7️⃣ 7️⃣ 7️⃣";
+      result.innerText = "🔥 JACKPOT +50!";
+    }
+
+    document.getElementById("coin").innerText = "Coin: " + coin;
+    localStorage.setItem("coin", coin);
+
+  }, 1000);
+}
+</script>
+
+</body>
+</html>
