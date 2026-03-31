@@ -1,21 +1,59 @@
-<script>
-let coin = 0;
-
-function spin() {
-    let random = Math.floor(Math.random() * 3);
-
-    if(random === 0) {
-        document.getElementById("result").innerHTML = "😢 Kaybettin";
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GöksuPlay</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding-top: 80px;
     }
-    else if(random === 1) {
+    button {
+      padding: 14px 28px;
+      font-size: 20px;
+      border: 0;
+      border-radius: 10px;
+      background: purple;
+      color: white;
+    }
+    #coin {
+      font-size: 28px;
+      margin: 20px 0;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎰 GöksuPlay</h1>
+  <p>Oyna, Kazan, Eğlen</p>
+
+  <div id="coin">Coin: 0</div>
+  <button onclick="spin()">SPIN AT</button>
+  <div id="result"></div>
+
+  <script>
+    let coin = 0;
+    function spin() {
+      const random = Math.floor(Math.random() * 3);
+      if (random === 0) {
+        document.getElementById("result").textContent = "😢 Kaybettin";
+      } else if (random === 1) {
         coin += 10;
-        document.getElementById("result").innerHTML = "💰 +10 Coin!";
-    }
-    else {
+        document.getElementById("result").textContent = "💰 +10 Coin!";
+      } else {
         coin += 50;
-        document.getElementById("result").innerHTML = "🔥 JACKPOT +50!";
+        document.getElementById("result").textContent = "🔥 JACKPOT +50!";
+      }
+      document.getElementById("coin").textContent = "Coin: " + coin;
     }
-
-    document.getElementById("coin").innerHTML = "Coin: " + coin;
-}
-</script>
+  </script>
+</body>
+</html>
