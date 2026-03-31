@@ -1,65 +1,3 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>GöksuPlay</title>
-
-<style>
-body {
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: white;
-    font-family: Arial;
-    text-align: center;
-}
-
-.container {
-    margin-top: 80px;
-}
-
-h1 {
-    font-size: 40px;
-}
-
-button {
-    padding: 15px 40px;
-    font-size: 22px;
-    background: linear-gradient(45deg, purple, pink);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(0.95);
-}
-
-#coin {
-    font-size: 28px;
-    margin: 20px;
-}
-
-#result {
-    margin-top: 30px;
-    font-size: 20px;
-}
-</style>
-
-</head>
-
-<body>
-
-<div class="container">
-    <h1>🎰 GöksuPlay</h1>
-    <p>Oyna, Kazan, Eğlen</p>
-
-    <div id="coin">Coin: 0</div>
-
-    <button onclick="spin()">SPIN AT</button>
-
-    <div id="result"></div>
-</div>
-
 <script>
 let coin = 0;
 
@@ -81,6 +19,3 @@ function spin() {
     document.getElementById("coin").innerHTML = "Coin: " + coin;
 }
 </script>
-
-</body>
-</html>
